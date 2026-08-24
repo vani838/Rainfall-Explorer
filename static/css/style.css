@@ -1,0 +1,899 @@
+/* =====================================================
+   RAINFALL EXPLORER v2
+   STYLE.CSS - PART 1
+===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ==========================
+   RESET
+========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+html,
+body{
+    margin:0;
+    overflow:hidden;
+    background:transparent;
+}
+
+/* ==========================
+   BACKGROUND VIDEOS
+========================== */
+
+video{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    z-index:-2;
+
+}
+
+/* ==========================
+   DARK OVERLAY
+========================== */
+.overlay{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.35);
+
+    z-index:-2;
+
+}
+/* ==========================
+   RAIN LAYER
+========================== */
+
+#rain{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    overflow:hidden;
+
+    z-index:-1;
+
+}
+
+.drop{
+
+    position:absolute;
+
+    width:2px;
+
+    height:20px;
+
+    background:white;
+
+    opacity:.35;
+
+    animation:rain linear infinite;
+
+}
+
+@keyframes rain{
+
+    from{
+
+        transform:translateY(-100px);
+
+    }
+
+    to{
+
+        transform:translateY(110vh);
+
+    }
+
+}
+
+/* ==========================
+   LIGHTNING
+========================== */
+
+#lightning{
+
+    position:fixed;
+
+    inset:0;
+
+    background:white;
+
+    opacity:0;
+
+    pointer-events:none;
+
+}
+
+.flash{
+
+    animation:flash .35s;
+
+}
+
+@keyframes flash{
+
+    0%{opacity:0;}
+
+    30%{opacity:.8;}
+
+    100%{opacity:0;}
+
+}
+
+/* ==========================
+   LOADER
+========================== */
+
+#loader{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.6);
+
+    z-index:9999;
+
+}
+
+.loader-circle{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    border:6px solid rgba(255,255,255,.2);
+
+    border-top:6px solid #00d4ff;
+
+    animation:spin 1s linear infinite;
+
+}
+
+@keyframes spin{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+/* ==========================
+   DASHBOARD
+========================== */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:340px 1fr;
+
+    gap:20px;
+
+    width:100%;
+
+    height:100vh;
+
+    padding:20px;
+
+}
+
+/* ==========================
+   SIDEBAR
+========================== */
+
+.sidebar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+/* ==========================
+   GLASS CARD
+========================== */
+
+.glass-card{
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:20px;
+
+    padding:20px;
+
+    color:#fff;
+
+    box-shadow:
+
+        0 8px 30px rgba(0,0,0,.25);
+
+}
+
+/* ==========================
+   LOGO
+========================== */
+
+.logo{
+
+    text-align:center;
+
+    color:white;
+
+}
+
+.logo h1{
+
+    font-size:2rem;
+
+    font-weight:700;
+
+}
+
+.logo span{
+
+    color:#00d4ff;
+
+}
+
+.logo p{
+
+    margin-top:8px;
+
+    color:#d9d9d9;
+
+    font-size:.95rem;
+
+}
+
+/* ==========================
+   CONTENT
+========================== */
+
+.content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    height:100%;
+
+}
+
+/* =====================================================
+   STYLE.CSS - PART 2
+===================================================== */
+
+/* ==========================
+   FORM ELEMENTS
+========================== */
+
+.glass-card label{
+
+    display:block;
+
+    margin-top:15px;
+    margin-bottom:6px;
+
+    font-size:.9rem;
+
+    color:#f2f2f2;
+
+}
+
+.glass-card input,
+.glass-card select{
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.15);
+
+    color:white;
+
+    outline:none;
+
+    font-size:.95rem;
+
+}
+
+.glass-card input::placeholder{
+
+    color:#d0d0d0;
+
+}
+
+.glass-card select option{
+
+    color:black;
+
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+button{
+
+    width:100%;
+
+    margin-top:15px;
+
+    padding:13px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+#searchBtn{
+
+    background:#00c853;
+
+    color:white;
+
+}
+
+#searchBtn:hover{
+
+    background:#00a846;
+
+    transform:translateY(-2px);
+
+}
+
+#resetBtn{
+
+    background:#ff9800;
+
+    color:white;
+
+}
+
+#resetBtn:hover{
+
+    background:#f57c00;
+
+}
+
+/* ==========================
+   MAP
+========================== */
+
+#map{
+
+    width:100%;
+
+    height:420px;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    margin-top:15px;
+
+}
+
+/* ==========================
+   BOTTOM GRID
+========================== */
+
+.bottom-grid{
+
+    display:grid;
+
+    grid-template-columns:360px 1fr;
+
+    gap:20px;
+
+}
+
+/* ==========================
+   SUMMARY CARD
+========================== */
+
+.summary{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.avg{
+
+    text-align:center;
+
+}
+
+.avg h1{
+
+    font-size:3rem;
+
+    color:#00e5ff;
+
+}
+
+.avg p{
+
+    color:#ddd;
+
+}
+
+.mini-cards{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:15px;
+
+}
+
+.mini{
+
+    padding:18px;
+
+    border-radius:15px;
+
+    text-align:center;
+
+    background:rgba(255,255,255,.12);
+
+}
+
+.green{
+
+    border-left:5px solid #00e676;
+
+}
+
+.yellow{
+
+    border-left:5px solid #ffd600;
+
+}
+
+.mini h2{
+
+    font-size:1.8rem;
+
+}
+
+.location-box{
+
+    margin-top:20px;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.12);
+
+    font-weight:600;
+
+}
+
+.category{
+
+    margin-top:15px;
+
+    text-align:center;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    color:#00e5ff;
+
+}
+
+/* ==========================
+   CHART
+========================== */
+
+.chart-card{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.chart-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.chart-header .buttons{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.chart-header button{
+
+    width:auto;
+
+    margin:0;
+
+    padding:10px 16px;
+
+    background:#2196f3;
+
+    color:white;
+
+}
+
+.chart-header button:hover{
+
+    background:#1976d2;
+
+}
+
+.chart-container{
+
+    flex:1;
+
+    min-height:320px;
+
+    position:relative;
+
+}
+
+#rainChart{
+
+    width:100% !important;
+
+    height:100% !important;
+
+}
+
+/* =====================================================
+   STYLE.CSS - PART 3
+   Responsive + Final Polish
+===================================================== */
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-track{
+    background:rgba(255,255,255,.08);
+}
+
+::-webkit-scrollbar-thumb{
+    background:#00d4ff;
+    border-radius:10px;
+}
+
+/* ==========================
+   GLASS CARD HOVER
+========================== */
+
+.glass-card{
+    transition:.35s ease;
+}
+
+.glass-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.35);
+
+}
+
+/* ==========================
+   MAP POPUP
+========================== */
+
+.leaflet-popup-content-wrapper{
+
+    border-radius:15px;
+
+}
+
+.leaflet-popup-content{
+
+    font-family:'Poppins',sans-serif;
+
+}
+
+/* ==========================
+   VIDEO SMOOTH TRANSITION
+========================== */
+
+video{
+
+    transition:opacity .6s ease;
+
+}
+
+/* ==========================
+   RAIN DROPS
+========================== */
+
+.drop{
+
+    border-radius:50%;
+
+    filter:blur(.3px);
+
+}
+
+/* ==========================
+   LIGHTNING EFFECT
+========================== */
+
+#lightning.flash{
+
+    animation:lightningFlash .4s ease;
+
+}
+
+@keyframes lightningFlash{
+
+    0%{opacity:0;}
+
+    20%{opacity:.9;}
+
+    40%{opacity:.2;}
+
+    60%{opacity:.8;}
+
+    100%{opacity:0;}
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:1200px){
+
+.dashboard{
+
+    grid-template-columns:300px 1fr;
+
+}
+
+.bottom-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:992px){
+
+.dashboard{
+
+    grid-template-columns:1fr;
+
+    overflow-y:auto;
+
+    height:auto;
+
+}
+
+.sidebar{
+
+    order:2;
+
+}
+
+.content{
+
+    order:1;
+
+}
+
+#map{
+
+    height:380px;
+
+}
+
+}
+
+@media(max-width:768px){
+
+body{
+
+    overflow:auto;
+
+}
+
+.dashboard{
+
+    padding:15px;
+
+}
+
+.logo h1{
+
+    font-size:1.7rem;
+
+}
+
+.avg h1{
+
+    font-size:2.3rem;
+
+}
+
+.chart-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:12px;
+
+}
+
+.chart-header .buttons{
+
+    width:100%;
+
+}
+
+.chart-header button{
+
+    flex:1;
+
+}
+
+#map{
+
+    height:300px;
+
+}
+
+}
+
+@media(max-width:480px){
+
+.glass-card{
+
+    padding:16px;
+
+}
+
+button{
+
+    font-size:14px;
+
+}
+
+.avg h1{
+
+    font-size:2rem;
+
+}
+
+.mini h2{
+
+    font-size:1.3rem;
+
+}
+
+.logo h1{
+
+    font-size:1.4rem;
+
+}
+
+}
+
+/* Button spacing fix */
+
+button{
+    width:100%;
+    margin-top:12px;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+
+/* Buttons container scroll issue fix */
+
+.sidebar{
+    overflow-y:auto;
+    padding-bottom:30px;
+}
+
+
+/* Reset and Excel button spacing */
+
+#resetBtn,
+#excelBtn,
+button{
+    position:relative;
+    z-index:5;
+}
+
+.action-buttons{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+/* ==========================
+   END
+========================== */

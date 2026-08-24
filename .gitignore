@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.env
+*.log
+
+final_merged.nc
+rf_data.csv
+RF25_ind2024_rfp25.nc
+
+rf_data.csv
+RF25_ind2024_rfp25.nc
+
+rf_data.csv
+RF25_ind2024_rfp25.nc
