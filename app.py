@@ -497,6 +497,219 @@ def download_excel():
         wb = Workbook()
 
         # ==================================================
+        # EXCEL PROFESSIONAL STYLING
+        # ==================================================
+
+        from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
+        from openpyxl.formatting.rule import CellIsRule
+
+        # ---------- COLORS ----------
+        dark_blue = "1F4E78"
+        medium_blue = "5B9BD5"
+        light_blue = "D9EAF7"
+        very_light_blue = "EAF3F8"
+
+        dark_green = "548235"
+        light_green = "E2F0D9"
+
+        dark_orange = "C65911"
+        light_orange = "FCE4D6"
+
+        dark_red = "C00000"
+        light_red = "F4CCCC"
+
+        dark_gray = "404040"
+        light_gray = "F2F2F2"
+        white = "FFFFFF"
+
+        # ---------- FONTS ----------
+        title_font = Font(
+            name="Calibri",
+            size=18,
+            bold=True,
+            color=white
+        )
+
+        subtitle_font = Font(
+            name="Calibri",
+            size=12,
+            bold=True,
+            color=dark_blue
+        )
+
+        header_font = Font(
+            name="Calibri",
+            size=11,
+            bold=True,
+            color=white
+        )
+
+        bold_font = Font(
+            name="Calibri",
+            size=11,
+            bold=True
+        )
+
+        normal_font = Font(
+            name="Calibri",
+            size=11
+        )
+
+        # ---------- FILLS ----------
+        title_fill = PatternFill(
+            "solid",
+            fgColor=dark_blue
+        )
+
+        header_fill = PatternFill(
+            "solid",
+            fgColor=medium_blue
+        )
+
+        section_fill = PatternFill(
+            "solid",
+            fgColor=light_blue
+        )
+
+        alternate_fill = PatternFill(
+            "solid",
+            fgColor=very_light_blue
+        )
+
+        green_fill = PatternFill(
+            "solid",
+            fgColor=light_green
+        )
+
+        orange_fill = PatternFill(
+            "solid",
+            fgColor=light_orange
+        )
+
+        red_fill = PatternFill(
+            "solid",
+            fgColor=light_red
+        )
+
+        gray_fill = PatternFill(
+            "solid",
+            fgColor=light_gray
+        )
+
+        # ---------- BORDER ----------
+        thin_side = Side(
+            style="thin",
+            color="B7B7B7"
+        )
+
+        medium_side = Side(
+            style="medium",
+            color=dark_blue
+        )
+
+        thin_border = Border(
+            left=thin_side,
+            right=thin_side,
+            top=thin_side,
+            bottom=thin_side
+        )
+
+        # ---------- ALIGNMENT ----------
+        center_alignment = Alignment(
+            horizontal="center",
+            vertical="center"
+        )
+
+        left_alignment = Alignment(
+            horizontal="left",
+            vertical="center"
+        )
+
+        # ---------- GENERAL SHEET FUNCTION ----------
+        def style_table_sheet(
+            sheet,
+            header_row=1,
+            alternate_rows=True
+        ):
+
+            # Header
+            for cell in sheet[header_row]:
+
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = center_alignment
+                cell.border = thin_border
+
+            # Data rows
+            for row_num in range(
+                header_row + 1,
+                sheet.max_row + 1
+            ):
+
+                for cell in sheet[row_num]:
+
+                    cell.font = normal_font
+                    cell.alignment = center_alignment
+                    cell.border = thin_border
+
+                    if (
+                        alternate_rows
+                        and row_num % 2 == 0
+                    ):
+                        cell.fill = alternate_fill
+
+            # Header height
+            sheet.row_dimensions[
+                header_row
+            ].height = 25
+
+            # Freeze header
+            sheet.freeze_panes = "A2"
+
+            # Filter
+            if sheet.max_row >= header_row:
+                sheet.auto_filter.ref = (
+                    f"A{header_row}:"
+                    f"{chr(64 + sheet.max_column)}"
+                    f"{sheet.max_row}"
+                )
+
+        # ---------- RAINFALL CATEGORY COLORS ----------
+        def style_category_cell(cell):
+
+            if cell.value == "No Rain":
+
+                cell.fill = gray_fill
+                cell.font = Font(
+                    bold=True,
+                    color=dark_gray
+                )
+
+            elif cell.value == "Light Rain":
+
+                cell.fill = green_fill
+                cell.font = Font(
+                    bold=True,
+                    color=dark_green
+                )
+
+            elif cell.value == "Moderate Rain":
+
+                cell.fill = orange_fill
+                cell.font = Font(
+                    bold=True,
+                    color=dark_orange
+                )
+
+            elif cell.value == "Heavy Rain":
+
+                cell.fill = red_fill
+                cell.font = Font(
+                    bold=True,
+                    color=dark_red
+                )
+
+        # ==================================================
         # SUMMARY SHEET
         # ==================================================
 
@@ -924,6 +1137,226 @@ def download_excel():
         print(
             wb.sheetnames
         )
+
+        # ==================================================
+        # APPLY PROFESSIONAL FORMATTING
+        # ==================================================
+
+        # --------------------------------------------------
+        # SUMMARY SHEET
+        # --------------------------------------------------
+
+        # Main title
+        ws.merge_cells("A1:B1")
+
+        ws["A1"].fill = title_fill
+        ws["A1"].font = title_font
+        ws["A1"].alignment = center_alignment
+        ws["A1"].border = Border(
+            top=medium_side,
+            bottom=medium_side
+        )
+
+        ws.row_dimensions[1].height = 32
+
+        # Subtitle
+        ws.merge_cells("A2:B2")
+
+        ws["A2"].font = subtitle_font
+        ws["A2"].alignment = center_alignment
+
+        # Information section
+        for row_num in range(4, 8):
+
+            ws[f"A{row_num}"].fill = section_fill
+            ws[f"A{row_num}"].font = bold_font
+            ws[f"A{row_num}"].border = thin_border
+
+            ws[f"B{row_num}"].border = thin_border
+            ws[f"B{row_num}"].alignment = center_alignment
+
+        # Statistics heading
+        ws["A9"].fill = header_fill
+        ws["A9"].font = header_font
+        ws["A9"].alignment = center_alignment
+
+        ws.merge_cells("A9:B9")
+
+        # Statistics
+        for row_num in range(
+            10,
+            ws.max_row + 1
+        ):
+
+            ws[f"A{row_num}"].font = bold_font
+            ws[f"A{row_num}"].fill = section_fill
+            ws[f"A{row_num}"].border = thin_border
+
+            ws[f"B{row_num}"].border = thin_border
+            ws[f"B{row_num}"].alignment = center_alignment
+
+            # Highlight important values
+            if row_num in [10, 11]:
+                ws[f"B{row_num}"].fill = green_fill
+                ws[f"B{row_num}"].font = Font(
+                    bold=True
+                )
+
+            elif row_num == 12:
+                ws[f"B{row_num}"].fill = orange_fill
+                ws[f"B{row_num}"].font = Font(
+                    bold=True
+                )
+
+            elif row_num == 13:
+                ws[f"B{row_num}"].fill = section_fill
+
+        # Summary widths
+        ws.column_dimensions["A"].width = 38
+        ws.column_dimensions["B"].width = 30
+
+        ws.freeze_panes = "A4"
+
+
+        # --------------------------------------------------
+        # MONTHLY SUMMARY
+        # --------------------------------------------------
+
+        style_table_sheet(
+            monthly_ws,
+            header_row=1,
+            alternate_rows=True
+        )
+
+        monthly_ws.freeze_panes = "A2"
+
+        # Highlight rainfall columns
+        for row_num in range(
+            2,
+            monthly_ws.max_row + 1
+        ):
+
+            monthly_ws[f"B{row_num}"].fill = section_fill
+            monthly_ws[f"C{row_num}"].fill = alternate_fill
+
+            monthly_ws[f"D{row_num}"].fill = orange_fill
+
+            monthly_ws[f"E{row_num}"].fill = green_fill
+
+            monthly_ws[f"F{row_num}"].fill = gray_fill
+
+        # Month column
+        for row_num in range(
+            2,
+            monthly_ws.max_row + 1
+        ):
+
+            monthly_ws[f"A{row_num}"].font = bold_font
+
+        monthly_ws.column_dimensions["A"].width = 20
+        monthly_ws.column_dimensions["B"].width = 22
+        monthly_ws.column_dimensions["C"].width = 20
+        monthly_ws.column_dimensions["D"].width = 20
+        monthly_ws.column_dimensions["E"].width = 20
+        monthly_ws.column_dimensions["F"].width = 18
+
+
+        # --------------------------------------------------
+        # YEARLY DATA
+        # --------------------------------------------------
+
+        style_table_sheet(
+            yearly_ws,
+            header_row=1,
+            alternate_rows=True
+        )
+
+        for row_num in range(
+            2,
+            yearly_ws.max_row + 1
+        ):
+
+            yearly_ws[f"A{row_num}"].font = bold_font
+
+            yearly_ws[f"B{row_num}"].fill = section_fill
+            yearly_ws[f"C{row_num}"].fill = alternate_fill
+            yearly_ws[f"D{row_num}"].fill = orange_fill
+            yearly_ws[f"E{row_num}"].fill = green_fill
+            yearly_ws[f"F{row_num}"].fill = gray_fill
+
+        yearly_ws.freeze_panes = "A2"
+
+        yearly_ws.column_dimensions["A"].width = 14
+        yearly_ws.column_dimensions["B"].width = 24
+        yearly_ws.column_dimensions["C"].width = 20
+        yearly_ws.column_dimensions["D"].width = 20
+        yearly_ws.column_dimensions["E"].width = 20
+        yearly_ws.column_dimensions["F"].width = 18
+
+
+        # --------------------------------------------------
+        # DAILY DATA
+        # --------------------------------------------------
+
+        style_table_sheet(
+            daily_ws,
+            header_row=1,
+            alternate_rows=True
+        )
+
+        daily_ws.freeze_panes = "A2"
+
+        # Date column
+        daily_ws.column_dimensions["A"].width = 23
+
+        # Other columns
+        daily_ws.column_dimensions["B"].width = 14
+        daily_ws.column_dimensions["C"].width = 16
+        daily_ws.column_dimensions["D"].width = 12
+        daily_ws.column_dimensions["E"].width = 18
+        daily_ws.column_dimensions["F"].width = 20
+
+        # Rainfall + category formatting
+        for row_num in range(
+            2,
+            daily_ws.max_row + 1
+        ):
+
+            rainfall_cell = daily_ws[
+                f"E{row_num}"
+            ]
+
+            category_cell = daily_ws[
+                f"F{row_num}"
+            ]
+
+            rainfall_value = rainfall_cell.value
+
+            if rainfall_value is not None:
+
+                if rainfall_value <= 2.5:
+
+                    rainfall_cell.fill = gray_fill
+
+                elif rainfall_value <= 15:
+
+                    rainfall_cell.fill = green_fill
+
+                elif rainfall_value <= 65:
+
+                    rainfall_cell.fill = orange_fill
+
+                else:
+
+                    rainfall_cell.fill = red_fill
+
+                rainfall_cell.font = Font(
+                    bold=True
+                )
+
+            style_category_cell(
+                category_cell
+            )
 
         # ==================================================
         # SAVE EXCEL
@@ -1422,10 +1855,9 @@ def get_rainfall():
         )
 
 
-        # ==============================
+                # ==============================
         # SINGLE DATE
         # ==============================
-
         if search_type == "date":
 
             date = data.get("date")
@@ -1440,9 +1872,8 @@ def get_rainfall():
             dataset_end = pd.Timestamp("2024-12-31")
 
             # ==========================================
-            # LIVE DATA
+            # LIVE / FORECAST DATA
             # ==========================================
-
             if selected_date > dataset_end:
 
                 live_data = get_live_rainfall(
@@ -1453,31 +1884,27 @@ def get_rainfall():
 
                 rainfall_value = live_data["rainfall"]
 
-            today = pd.Timestamp.now().strftime("%Y-%m-%d")
+                today = pd.Timestamp.now().strftime("%Y-%m-%d")
 
-            if date > today:
-                data_type = "forecast"
-            else:
-                data_type = "current"
+                if date > today:
+                    data_type = "forecast"
+                else:
+                    data_type = "current"
 
-            return jsonify({
-                "status": "success",
-
-                "latitude": live_data["latitude"],
-                "longitude": live_data["longitude"],
-
-                "average": rainfall_value,
-                "maximum": rainfall_value,
-                "minimum": rainfall_value,
-
-                "category": rainfall_category(
-                    rainfall_value
-                ),
-
-                "data_source": "Open-Meteo",
-                "data_type": data_type,
-                "date": date
-            })            
+                return jsonify({
+                    "status": "success",
+                    "latitude": live_data["latitude"],
+                    "longitude": live_data["longitude"],
+                    "average": rainfall_value,
+                    "maximum": rainfall_value,
+                    "minimum": rainfall_value,
+                    "category": rainfall_category(
+                        rainfall_value
+                    ),
+                    "data_source": "Open-Meteo",
+                    "data_type": data_type,
+                    "date": date
+                })
 
             # ==========================================
             # HISTORICAL DATA
@@ -1487,7 +1914,36 @@ def get_rainfall():
                 TIME=date,
                 method="nearest"
             )
-    
+
+            average, maximum, minimum = calculate_statistics(
+                rainfall_point
+            )
+
+            nearest_lat = float(
+                rainfall_point.LATITUDE.values.item()
+            )
+
+            nearest_lon = float(
+                rainfall_point.LONGITUDE.values.item()
+            )
+
+            return jsonify({
+                "status": "success",
+                "latitude": nearest_lat,
+                "longitude": nearest_lon,
+                "average": round(average, 2),
+                "maximum": round(maximum, 2),
+                "minimum": round(minimum, 2),
+                "category": rainfall_category(
+                    average
+                ),
+                "data_source": "IMD Daily Rainfall Dataset",
+                "data_type": "historical",
+                "date": date
+            })
+            
+
+                
     
     
         # ==============================
