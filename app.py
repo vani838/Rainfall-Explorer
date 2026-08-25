@@ -29,6 +29,240 @@ DATASET_PATH = os.path.join(
     "final_merged.nc"
 )
 
+DATASET_URL = (
+    "https://huggingface.co/datasets/"
+    "vani-838/rainfall-explorer-data/"
+    "resolve/main/final_merged.nc"
+)
+
+
+def ensure_dataset():
+
+    # ----------------------------------------------
+    # CHECK IF DATASET ALREADY EXISTS
+    # ----------------------------------------------
+
+    if os.path.exists(DATASET_PATH):
+
+        file_size_gb = (
+            os.path.getsize(DATASET_PATH)
+            / (1024 ** 3)
+        )
+
+        print(
+            f"✅ Dataset already exists: "
+            f"{file_size_gb:.2f} GB"
+        )
+
+        return
+
+
+    # ----------------------------------------------
+    # DOWNLOAD DATASET
+    # ----------------------------------------------
+
+    print("=" * 60)
+    print("⬇️ DOWNLOADING RAINFALL DATASET")
+    print("=" * 60)
+
+    print("Dataset URL:")
+    print(DATASET_URL)
+
+    print("")
+    print(
+        "⚠️ Dataset is approximately 6.3 GB."
+    )
+    print(
+        "Please wait. Download may take several minutes."
+    )
+
+    temp_path = DATASET_PATH + ".download"
+
+
+    try:
+
+        # ------------------------------------------
+        # REQUEST
+        # ------------------------------------------
+
+        response = requests.get(
+            DATASET_URL,
+            stream=True,
+            timeout=(30, 1800)
+        )
+
+        response.raise_for_status()
+
+
+        # ------------------------------------------
+        # FILE SIZE
+        # ------------------------------------------
+
+        total_size = int(
+            response.headers.get(
+                "content-length",
+                0
+            )
+        )
+
+        if total_size:
+
+            print(
+                "Remote file size:",
+                round(
+                    total_size / (1024 ** 3),
+                    2
+                ),
+                "GB"
+            )
+
+
+        # ------------------------------------------
+        # DOWNLOAD
+        # ------------------------------------------
+
+        downloaded = 0
+
+        chunk_size = 8 * 1024 * 1024
+
+        with open(
+            temp_path,
+            "wb"
+        ) as file:
+
+            for chunk in response.iter_content(
+                chunk_size=chunk_size
+            ):
+
+                if not chunk:
+                    continue
+
+                file.write(chunk)
+
+                downloaded += len(chunk)
+
+                if total_size:
+
+                    percentage = (
+                        downloaded
+                        / total_size
+                    ) * 100
+
+                    downloaded_gb = (
+                        downloaded
+                        / (1024 ** 3)
+                    )
+
+                    print(
+                        f"Download: "
+                        f"{downloaded_gb:.2f} GB "
+                        f"({percentage:.1f}%)",
+                        flush=True
+                    )
+
+
+        # ------------------------------------------
+        # VERIFY DOWNLOAD
+        # ------------------------------------------
+
+        if not os.path.exists(temp_path):
+
+            raise FileNotFoundError(
+                "Dataset download failed."
+            )
+
+
+        downloaded_size = os.path.getsize(
+            temp_path
+        )
+
+
+        if downloaded_size < 100 * 1024 * 1024:
+
+            raise ValueError(
+                "Downloaded dataset is unexpectedly small."
+            )
+
+
+        # ------------------------------------------
+        # RENAME TEMP FILE
+        # ------------------------------------------
+
+        os.replace(
+            temp_path,
+            DATASET_PATH
+        )
+
+
+        print("")
+        print(
+            "✅ Dataset downloaded successfully!"
+        )
+
+        print(
+            "Dataset size:",
+            round(
+                downloaded_size / (1024 ** 3),
+                2
+            ),
+            "GB"
+        )
+
+        print("=" * 60)
+
+
+    except Exception as e:
+
+        print("")
+        print(
+            "❌ DATASET DOWNLOAD FAILED"
+        )
+
+        print(
+            "Error:",
+            e
+        )
+
+        # Remove incomplete download
+
+        if os.path.exists(temp_path):
+
+            try:
+                os.remove(temp_path)
+
+            except Exception:
+                pass
+
+        raise
+
+def ensure_dataset():
+
+    if os.path.exists(DATASET_PATH):
+        print("✅ Dataset already exists")
+        return
+
+    print("⬇️ Downloading rainfall dataset...")
+    print("This may take some time because the dataset is large.")
+
+    response = requests.get(
+        DATASET_URL,
+        stream=True,
+        timeout=60
+    )
+
+    response.raise_for_status()
+
+    with open(DATASET_PATH, "wb") as f:
+
+        for chunk in response.iter_content(
+            chunk_size=1024 * 1024
+        ):
+
+            if chunk:
+                f.write(chunk)
+
+    print("✅ Dataset downloaded successfully")
+
 
 print("="*60)
 print("🌧 Rainfall Explorer v3")
@@ -36,12 +270,46 @@ print("Loading Rainfall Dataset...")
 print("="*60)
 
 
+ensure_dataset()
+
 try:
+
+    print("📂 Opening NetCDF dataset...")
 
     ds = xr.open_dataset(
         DATASET_PATH,
-        engine="netcdf4"
+        engine="netcdf4",
+        cache=False
     )
+
+    rain = ds["RAINFALL"]
+
+    print("✅ Dataset Loaded Successfully")
+
+    print(ds)
+
+    print(
+        "\nTotal Records :",
+        len(ds.TIME)
+    )
+
+    print(
+        "Latitude Grid :",
+        len(ds.LATITUDE)
+    )
+
+    print(
+        "Longitude Grid:",
+        len(ds.LONGITUDE)
+    )
+
+except Exception as e:
+
+    print("❌ Dataset Loading Failed")
+
+    print(e)
+
+    raise
 
     rain = ds["RAINFALL"]
 
@@ -2121,16 +2389,24 @@ def get_rainfall():
 # RUN APPLICATION
 # ==================================================
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
+    port = int(
+        os.environ.get(
+            "PORT",
+            5503
+        )
+    )
 
     app.run(
-
         host="0.0.0.0",
-
-        port=5503,
-
+        port=port,
         debug=False
-
     )
-    
+    port = int(os.environ.get("PORT", 5503))
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
