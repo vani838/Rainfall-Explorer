@@ -3,6 +3,9 @@
 A web-based rainfall analysis and visualization platform that allows users to explore rainfall data using **latitude, longitude, and date**.
 
 The application combines historical rainfall data from **NetCDF datasets** with live rainfall data to provide an interactive and user-friendly rainfall exploration experience.
+## 🖥️ Project Preview
+
+![Rainfall Explorer](rainfall-explorer.png)
 
 ## 🚀 Features
 
