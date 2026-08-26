@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>🌧 Rainfall Explorer v3</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+</head>
+
+<body>
+
+<!-- ========================================= -->
+<!-- BACKGROUND VIDEOS -->
+<!-- ========================================= -->
+
+<video id="sunnyVideo"
+       autoplay
+       muted
+       loop
+       playsinline>
+
+    <source src="{{ url_for('static', filename='videos/Sunny day.mp4') }}"
+            type="video/mp4">
+
+</video>
+
+<video id="rainVideo"
+       autoplay
+       muted
+       loop
+       playsinline
+       style="display:none;">
+
+    <source src="{{ url_for('static', filename='videos/Rain.mp4') }}"
+            type="video/mp4">
+
+</video>
+
+<video id="stormVideo"
+       autoplay
+       muted
+       loop
+       playsinline
+       style="display:none;">
+
+    <source src="{{ url_for('static', filename='videos/Thunderstrom.mp4') }}"
+            type="video/mp4">
+
+</video>
+
+<div class="overlay"></div>
+
+<div id="lightning"></div>
+
+<div id="rain"></div>
+
+<!-- ========================================= -->
+<!-- LOADER -->
+<!-- ========================================= -->
+
+<div id="loader">
+
+    <div class="loader-circle"></div>
+
+</div>
+
+<!-- ========================================= -->
+<!-- MAIN DASHBOARD -->
+<!-- ========================================= -->
+
+<div class="dashboard">
+
+<!-- ========================================= -->
+<!-- SIDEBAR -->
+<!-- ========================================= -->
+
+<aside class="sidebar">
+
+<div class="logo">
+
+<h1>🌧 Rainfall <span>Explorer</span></h1>
+
+<p>IMD Daily Rainfall (1901–2024)</p>
+
+</div>
+
+<!-- ========================================= -->
+<!-- SEARCH PANEL -->
+<!-- ========================================= -->
+
+<div class="glass-card">
+
+<h3>📍 Search Rainfall</h3>
+
+<label>Search Type</label>
+
+<select id="searchType">
+
+<option value="date">Specific Date</option>
+
+<option value="month">Monthly Average</option>
+
+<option value="year">Yearly Average</option>
+
+<option value="dateRange">Date Range</option>
+
+<option value="yearRange">Year Range</option>
+
+</select>
+
+<label>Latitude</label>
+
+<input
+type="number"
+id="latitude"
+step="0.0001"
+placeholder="Latitude">
+
+<label>Longitude</label>
+
+<input
+type="number"
+id="longitude"
+step="0.0001"
+placeholder="Longitude">
+
+<label>Location</label>
+
+<input
+type="text"
+id="location"
+placeholder="Select from Map"
+readonly>
+
+<!-- DATE -->
+
+<div id="dateBox">
+
+<label>Select Date</label>
+
+<input
+type="date"
+id="date">
+
+</div>
+
+<!-- MONTH -->
+
+<div id="monthBox"
+style="display:none;">
+
+<label>Select Month</label>
+
+<input
+type="month"
+id="month">
+
+</div>
+
+<!-- YEAR -->
+
+<div id="yearBox"
+style="display:none;">
+
+<label>Select Year</label>
+
+<select id="year">
+
+{% for y in range(2024,1900,-1) %}
+
+<option value="{{y}}">{{y}}</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<!-- DATE RANGE -->
+
+<div id="dateRangeBox"
+style="display:none;">
+
+<label>From Date</label>
+
+<input
+type="date"
+id="fromDate">
+
+<label>To Date</label>
+
+
+<input
+type="date"
+id="toDate">
+
+</div>
+
+<!-- YEAR RANGE -->
+
+<div id="yearRangeBox"
+style="display:none;">
+
+<label>Start Year</label>
+
+<input
+type="number"
+id="startYear"
+min="1901"
+max="2024">
+
+<label>End Year</label>
+
+<input
+type="number"
+id="endYear"
+min="1901"
+max="2024">
+
+</div>
+
+<button id="searchBtn">
+
+🔍 Search Rainfall
+
+</button>
+
+<button id="resetBtn">
+
+🔄 Reset
+
+</button>
+
+<button id="excelBtn" onclick="downloadExcel()">
+📊 Download Excel
+</button>
+
+<div class="analysis-buttons">
+
+<button id="yearlyBtn">
+📈 Yearly Analysis
+</button>
+
+
+<button id="seasonBtn">
+🌦 Season Analysis
+</button>
+
+
+<button id="extremeBtn">
+⛈ Extreme Events
+</button>
+
+
+<button id="trendBtn">
+📊 Rainfall Trend
+</button>
+
+</div>
+
+</div>
+
+<!-- ========================================= -->
+<!-- DATASET INFORMATION -->
+<!-- ========================================= -->
+
+<div class="glass-card">
+
+<h3>📊 Dataset</h3>
+
+<p><b>Source :</b> IMD Daily Rainfall</p>
+
+<p><b>Coverage :</b> 1901 – 2024</p>
+
+<p><b>Latitude :</b> 6.5° – 38.5°</p>
+
+<p><b>Longitude :</b> 66.5° – 100°</p>
+
+<p><b>Total Records :</b> 45,291 Daily Observations</p>
+
+<p><b>Variable :</b> Gridded Rainfall (mm/day)</p>
+
+<p><b>Grid :</b> 0.25° x 0.25°</p>
+
+</div>
+
+</aside>
+
+<!-- ========================================= -->
+<!-- CONTENT START -->
+<!-- ========================================= -->
+
+<main class="content">
+  
+        <!-- ========================================= -->
+    <!-- MAP -->
+    <!-- ========================================= -->
+
+    <div class="glass-card">
+
+        <div class="card-header">
+
+            <h2>🗺 Rainfall Location Map</h2>
+
+            <p>Click anywhere on India to select a location.</p>
+
+        </div>
+
+        <div id="map"></div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- RESULT SECTION -->
+    <!-- ========================================= -->
+
+    <div class="bottom-grid">
+
+        <!-- SUMMARY -->
+
+        <div class="glass-card">
+
+            <h3>🌧 Rainfall Summary</h3>
+
+            <div id="dataSourceBadge" class="data-source-badge">
+    📊 Historical Data
+</div>
+
+            <div class="summary">
+
+                <div class="avg">
+
+                    <h1 id="avgRain">--</h1>
+
+                    <p>Average Rainfall (mm)</p>
+
+                </div>
+
+                <div class="mini-cards">
+
+                    <div class="mini green">
+
+                        <h2 id="maxRain">--</h2>
+
+                        <p>Maximum</p>
+
+                    </div>
+
+                    <div class="mini yellow">
+
+                        <h2 id="minRain">--</h2>
+
+                        <p>Minimum</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="location-box">
+
+                📍
+                <span id="showLocation">
+
+                    Select a Location
+
+                </span>
+
+            </div>
+
+            <div id="rainCategory"
+                 class="category">
+
+                Waiting for Search...
+
+            </div>
+<div class="glass-card analysis-card">
+
+<h3>📊 Advanced Analysis</h3>
+
+
+<div id="analysisResult">
+
+Select location and run analysis.
+
+</div>
+
+
+</div>
+        </div>
+
+        <!-- CHART -->
+
+        <div class="glass-card chart-card">
+
+            <div class="chart-header">
+
+                <h3>📈 Rainfall Analysis</h3>
+
+                <div class="buttons">
+
+                    <button id="downloadCSV">
+
+                        📄 CSV
+
+                    </button>
+
+                    <button id="downloadPDF">
+
+                        📑 PDF
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="chart-container">
+
+                <canvas id="rainChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+
+<!-- ========================================= -->
+<!-- JAVASCRIPT LIBRARIES -->
+<!-- ========================================= -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- ========================================= -->
+<!-- MAIN JAVASCRIPT -->
+<!-- ========================================= -->
+
+<script src="{{ url_for('static',
+filename='js/script.js') }}">
+
+</script>
+
+</body>
+
+</html>
