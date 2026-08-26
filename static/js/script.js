@@ -1,3 +1,5 @@
+const BACKEND_URL = "https://computing-wielder-flattery.ngrok-free.dev";
+
 // =====================================================
 // RAINFALL EXPLORER v2
 // script.js - PART 1
@@ -213,7 +215,7 @@ async function searchRainfall() {
 
     try {
 
-        const response = await fetch("/get_rainfall", {
+        const response = await fetch(BACKEND_URL + "/get_rainfall", {
 
             method: "POST",
 
@@ -843,7 +845,7 @@ function downloadExcel() {
     console.log("Start Date:", startDate);
     console.log("End Date:", endDate);
 
-    fetch("/download_excel", {
+    fetch(BACKEND_URL + "/download_excel", {
 
         method: "POST",
 
