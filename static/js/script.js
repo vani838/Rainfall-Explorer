@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://computing-wielding-flattery.ngrok-free.dev";// script.js - PART 1
+const BACKEND_URL = "https://computing-wielder-flattery.ngrok-free.dev";// script.js - PART 1
 // =====================================================
 
 // -------------------------------
